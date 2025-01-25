@@ -1,0 +1,6 @@
+[submodule "course_nft/lib/forge-std"]
+	path = course_nft/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "course_nft/lib/openzeppelin-contracts"]
+	path = course_nft/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

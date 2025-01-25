@@ -1,13 +1,7 @@
-import Mux from "@mux/mux-node";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-import { db } from "@/lib/db";
-
-const { Video } = new Mux(
-  process.env.MUX_TOKEN_ID!,
-  process.env.MUX_TOKEN_SECRET!,
-);
+import { Course } from "@/mongodb/Course"; // Mongoose Course model
 
 export async function DELETE(
   req: Request,
@@ -20,17 +14,14 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const course = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId: userId,
-      },
-      include: {
-        chapters: {
-          include: {
-            muxData: true,
-          }
-        }
+    // Find the course and populate chapters and muxData
+    const course = await Course.findOne({
+      _id: params.courseId,
+      userId: userId,
+    }).populate({
+      path: 'chapters',
+      populate: {
+        path: 'muxData', // Assuming muxData is a referenced model
       }
     });
 
@@ -38,16 +29,12 @@ export async function DELETE(
       return new NextResponse("Not found", { status: 404 });
     }
 
-    for (const chapter of course.chapters) {
-      if (chapter.muxData?.assetId) {
-        await Video.Assets.del(chapter.muxData.assetId);
-      }
-    }
+   
 
-    const deletedCourse = await db.course.delete({
-      where: {
-        id: params.courseId,
-      },
+    // Delete the course
+    const deletedCourse = await Course.deleteOne({
+      _id: params.courseId,
+      userId: userId,
     });
 
     return NextResponse.json(deletedCourse);
@@ -70,17 +57,18 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const course = await db.course.update({
-      where: {
-        id: courseId,
-        userId
-      },
-      data: {
-        ...values,
-      }
-    });
+    // Update the course using Mongoose
+    const updatedCourse = await Course.findOneAndUpdate(
+      { _id: courseId, userId: userId },
+      { $set: values },
+      { new: true } // Return the updated document
+    );
 
-    return NextResponse.json(course);
+    if (!updatedCourse) {
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    return NextResponse.json(updatedCourse);
   } catch (error) {
     console.log("[COURSE_ID]", error);
     return new NextResponse("Internal Error", { status: 500 });

@@ -1,7 +1,8 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-
-import { db } from "@/lib/db";
+import { Course } from "@/mongodb/Course"; // Mongoose Course model
+import { Chapter } from "@/mongodb/Chapter"; // Mongoose Chapter model
+import mongoose from 'mongoose'; // For ObjectId handling
 
 export async function POST(
   req: Request,
@@ -15,35 +16,36 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const courseOwner = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId: userId,
-      }
+    // Check if the course exists and is owned by the user
+    const courseOwner = await Course.findOne({
+      _id: new mongoose.Types.ObjectId(params.courseId),
+      userId: userId,
     });
 
     if (!courseOwner) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const lastChapter = await db.chapter.findFirst({
-      where: {
-        courseId: params.courseId,
-      },
-      orderBy: {
-        position: "desc",
-      },
-    });
+    // Find the last chapter by position
+    const lastChapter = await Chapter.findOne({
+      courseId: new mongoose.Types.ObjectId(params.courseId),
+    }).sort({ position: "desc" });
 
+    // Determine the new chapter's position
     const newPosition = lastChapter ? lastChapter.position + 1 : 1;
 
-    const chapter = await db.chapter.create({
-      data: {
-        title,
-        courseId: params.courseId,
-        position: newPosition,
-      }
+    // Create a new chapter
+    const chapter = await Chapter.create({
+      title: title,
+      courseId: new mongoose.Types.ObjectId(params.courseId),
+      position: newPosition,
     });
+
+    // Add the new chapter's ObjectId to the course's chapters array
+    await Course.updateOne(
+      { _id: new mongoose.Types.ObjectId(params.courseId) },
+      { $push: { chapters: chapter._id } } // Push the new chapter's ObjectId
+    );
 
     return NextResponse.json(chapter);
   } catch (error) {

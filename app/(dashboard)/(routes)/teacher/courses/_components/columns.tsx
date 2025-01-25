@@ -1,6 +1,4 @@
 "use client"
-
-import { Course } from "@prisma/client"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react"
 import Link from "next/link";
@@ -14,8 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ICourse } from "@/mongodb/Course";
 
-export const columns: ColumnDef<Course>[] = [
+export const columns: ColumnDef<ICourse>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => {

@@ -1,28 +1,33 @@
 "use client";
 
+import { uploadFileToPinata } from "@/pinata/uploadFileToPinanta";
+import { FileUploader } from "react-drag-drop-files";
 import toast from "react-hot-toast";
-
-import { UploadDropzone } from "@/lib/uploadthing";
-import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 interface FileUploadProps {
   onChange: (url?: string) => void;
-  endpoint: keyof typeof ourFileRouter;
+  fileTypes: string[];
+
 };
 
 export const FileUpload = ({
   onChange,
-  endpoint
+  fileTypes
 }: FileUploadProps) => {
-  return (
-    <UploadDropzone
-      endpoint={endpoint}
-      onClientUploadComplete={(res) => {
-        onChange(res?.[0].url);
-      }}
-      onUploadError={(error: Error) => {
-        toast.error(`${error?.message}`);
-      }}
-    />
-  )
+  const handleChange = async (file: File) => {
+   try {
+    const url = await uploadFileToPinata(file)
+    console.log(url)
+    if(url) {
+      onChange(url)
+    }
+   } catch (error) {
+    console.log("Error")
+    toast.error("Failed to upload, Try again")
+   }
+  };
+    return (
+      <FileUploader handleChange={handleChange}  name="file" types={fileTypes} />
+    );
+
 }

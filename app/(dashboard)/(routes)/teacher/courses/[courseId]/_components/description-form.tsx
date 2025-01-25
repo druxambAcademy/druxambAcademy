@@ -8,7 +8,6 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Course } from "@prisma/client";
 
 import {
   Form,
@@ -20,9 +19,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { ICourse } from "@/mongodb/Course";
 
 interface DescriptionFormProps {
-  initialData: Course;
+  initialData: ICourse;
   courseId: string;
 };
 

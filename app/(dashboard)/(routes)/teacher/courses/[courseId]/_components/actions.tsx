@@ -24,8 +24,9 @@ export const Actions = ({
   const router = useRouter();
   const confetti = useConfettiStore();
   const [isLoading, setIsLoading] = useState(false);
-
+  console.log(courseId)
   const onClick = async () => {
+    console.log(courseId)
     try {
       setIsLoading(true);
 
@@ -33,6 +34,7 @@ export const Actions = ({
         await axios.patch(`/api/courses/${courseId}/unpublish`);
         toast.success("Course unpublished");
       } else {
+        console.log(courseId)
         await axios.patch(`/api/courses/${courseId}/publish`);
         toast.success("Course published");
         confetti.onOpen();

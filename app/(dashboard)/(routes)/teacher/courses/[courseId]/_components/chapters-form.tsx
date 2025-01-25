@@ -8,8 +8,6 @@ import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Chapter, Course } from "@prisma/client";
-
 import {
   Form,
   FormControl,
@@ -22,9 +20,11 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
 import { ChaptersList } from "./chapters-list";
+import { ICourse } from "@/mongodb/Course";
+import { IChapter } from "@/mongodb/Chapter";
 
 interface ChaptersFormProps {
-  initialData: Course & { chapters: Chapter[] };
+  initialData: ICourse & { chapters: IChapter[] };
   courseId: string;
 };
 
@@ -44,7 +44,7 @@ export const ChaptersForm = ({
   }
 
   const router = useRouter();
-
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

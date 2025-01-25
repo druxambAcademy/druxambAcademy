@@ -1,13 +1,15 @@
-import { Chapter, Course, UserProgress } from "@prisma/client"
 
 import { NavbarRoutes } from "@/components/navbar-routes";
 
 import { CourseMobileSidebar } from "./course-mobile-sidebar";
+import { ICourse } from "@/mongodb/Course";
+import { IChapter } from "@/mongodb/Chapter";
+import { IUserProgress } from "@/mongodb/UserProgress";
 
 interface CourseNavbarProps {
-  course: Course & {
-    chapters: (Chapter & {
-      userProgress: UserProgress[] | null;
+  course: ICourse & {
+    chapters: (IChapter & {
+      userProgress: IUserProgress[] | null;
     })[];
   };
   progressCount: number;

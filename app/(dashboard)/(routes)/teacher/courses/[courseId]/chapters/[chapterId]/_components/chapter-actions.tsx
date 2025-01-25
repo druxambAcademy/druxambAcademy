@@ -26,6 +26,7 @@ export const ChapterActions = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
+    console.log(courseId)
     try {
       setIsLoading(true);
 

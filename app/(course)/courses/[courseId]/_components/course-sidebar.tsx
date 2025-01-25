@@ -1,20 +1,20 @@
-import { auth } from "@clerk/nextjs";
-import { Chapter, Course, UserProgress } from "@prisma/client"
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-import { db } from "@/lib/db";
+import { ICourse } from "@/mongodb/Course";
+import { Chapter, IChapter } from "@/mongodb/Chapter";
+import { Purchase } from "@/mongodb/Purchase";
 import { CourseProgress } from "@/components/course-progress";
+import { UserProgress } from "@/mongodb/UserProgress";
 
 import { CourseSidebarItem } from "./course-sidebar-item";
 
 interface CourseSidebarProps {
-  course: Course & {
-    chapters: (Chapter & {
-      userProgress: UserProgress[] | null;
-    })[]
+  course: ICourse & {
+    chapters: IChapter[];
   };
   progressCount: number;
-};
+}
 
 export const CourseSidebar = async ({
   course,
@@ -26,14 +26,27 @@ export const CourseSidebar = async ({
     return redirect("/");
   }
 
-  const purchase = await db.purchase.findUnique({
-    where: {
-      userId_courseId: {
-        userId,
-        courseId: course.id,
-      }
-    }
+  const purchase = await Purchase.findOne({
+    userId,
+    courseId: course._id,
   });
+
+  // Fetch chapters and populate them with user progress
+  const chapters = await Chapter.find({ courseId: course._id })
+    .sort({ position: 1 })
+    .lean();
+
+  // Fetch user progress for each chapter
+  const chaptersWithProgress = await Promise.all(chapters.map(async (chapter) => {
+    const progress = await UserProgress.findOne({
+      userId,
+      chapterId: chapter._id
+    });
+    return {
+      ...chapter,
+      isCompleted: progress?.isCompleted || false
+    };
+  }));
 
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
@@ -51,13 +64,13 @@ export const CourseSidebar = async ({
         )}
       </div>
       <div className="flex flex-col w-full">
-        {course.chapters.map((chapter) => (
+        {chaptersWithProgress.map((chapter) => (
           <CourseSidebarItem
-            key={chapter.id}
-            id={chapter.id}
+            key={chapter._id.toString()}
+            id={chapter._id.toString()}
             label={chapter.title}
-            isCompleted={!!chapter.userProgress?.[0]?.isCompleted}
-            courseId={course.id}
+            isCompleted={chapter.isCompleted}
+            courseId={course._id as string}
             isLocked={!chapter.isFree && !purchase}
           />
         ))}

@@ -1,7 +1,8 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-
-import { db } from "@/lib/db";
+import mongoose from "mongoose";
+import { Course } from "@/mongodb/Course";
+import { Attachment } from "@/mongodb/Attachment";
 
 export async function POST(
   req: Request,
@@ -15,24 +16,28 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const courseOwner = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId: userId,
-      }
+    // Check if the course exists and is owned by the user
+    const courseOwner = await Course.findOne({
+      _id: new mongoose.Types.ObjectId(params.courseId),
+      userId: userId,
     });
 
     if (!courseOwner) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const attachment = await db.attachment.create({
-      data: {
-        url,
-        name: url.split("/").pop(),
-        courseId: params.courseId,
-      }
+    // Create the attachment
+    const attachment = await Attachment.create({
+      url,
+      name: url.split("/").pop(), // Use the last part of the URL as the name
+      courseId: new mongoose.Types.ObjectId(params.courseId),
     });
+
+    // Update the course to include the new attachment
+    await Course.updateOne(
+      { _id: new mongoose.Types.ObjectId(params.courseId) },
+      { $push: { attachments: attachment._id } } // Add the attachment's ObjectId to the course
+    );
 
     return NextResponse.json(attachment);
   } catch (error) {

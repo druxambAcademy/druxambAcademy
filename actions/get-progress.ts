@@ -1,30 +1,24 @@
-import { db } from "@/lib/db";
+import { Chapter } from "@/mongodb/Chapter";
+import { UserProgress } from "@/mongodb/UserProgress";
 
 export const getProgress = async (
   userId: string,
   courseId: string,
 ): Promise<number> => {
   try {
-    const publishedChapters = await db.chapter.findMany({
-      where: {
-        courseId: courseId,
-        isPublished: true,
-      },
-      select: {
-        id: true,
-      }
-    });
+    const publishedChapters = await Chapter.find({
+      courseId: courseId,
+      isPublished: true,
+    }).select('_id');
 
     const publishedChapterIds = publishedChapters.map((chapter) => chapter.id);
 
-    const validCompletedChapters = await db.userProgress.count({
-      where: {
-        userId: userId,
-        chapterId: {
-          in: publishedChapterIds,
-        },
-        isCompleted: true,
-      }
+    const validCompletedChapters = await UserProgress.countDocuments({
+      userId: userId,
+      chapterId: {
+        $in: publishedChapterIds,
+      },
+      isCompleted: true,
     });
 
     const progressPercentage = (validCompletedChapters / publishedChapterIds.length) * 100;

@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { Course, ICourse } from "@/mongodb/Course";
 import { redirect } from "next/navigation";
 
 const CourseIdPage = async ({
@@ -6,27 +6,25 @@ const CourseIdPage = async ({
 }: {
   params: { courseId: string; }
 }) => {
-  const course = await db.course.findUnique({
-    where: {
-      id: params.courseId,
-    },
-    include: {
-      chapters: {
-        where: {
-          isPublished: true,
-        },
-        orderBy: {
-          position: "asc"
-        }
-      }
-    }
-  });
+
+
+  const course = await Course.findById(params.courseId)
+    .populate({
+      path: 'chapters',
+      match: { isPublished: true },
+      options: { sort: { position: 1 } }
+    })
+    .lean() as ICourse;
 
   if (!course) {
     return redirect("/");
   }
 
-  return redirect(`/courses/${course.id}/chapters/${course.chapters[0].id}`);
+  if (!course.chapters || course.chapters.length === 0) {
+    return redirect("/");
+  }
+
+  return redirect(`/courses/${course._id}/chapters/${course.chapters[0]._id}`);
 }
  
 export default CourseIdPage;

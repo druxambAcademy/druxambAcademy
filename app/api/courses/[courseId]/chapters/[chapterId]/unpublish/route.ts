@@ -1,7 +1,8 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { Course } from "@/mongodb/Course";
+import { Chapter } from "@/mongodb/Chapter";
 
-import { db } from "@/lib/db";
 
 export async function PATCH(
   req: Request,
@@ -14,42 +15,34 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId
-      }
+    const ownCourse = await Course.findOne({
+      _id: params.courseId,
+      userId
     });
 
     if (!ownCourse) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const unpublishedChapter = await db.chapter.update({
-      where: {
-        id: params.chapterId,
+    const unpublishedChapter = await Chapter.findOneAndUpdate(
+      {
+        _id: params.chapterId,
         courseId: params.courseId,
       },
-      data: {
+      {
         isPublished: false,
-      }
-    });
+      },
+      { new: true }
+    );
 
-    const publishedChaptersInCourse = await db.chapter.findMany({
-      where: {
-        courseId: params.courseId,
-        isPublished: true,
-      }
+    const publishedChaptersInCourse = await Chapter.find({
+      courseId: params.courseId,
+      isPublished: true,
     });
 
     if (!publishedChaptersInCourse.length) {
-      await db.course.update({
-        where: {
-          id: params.courseId,
-        },
-        data: {
-          isPublished: false,
-        }
+      await Course.findByIdAndUpdate(params.courseId, {
+        isPublished: false,
       });
     }
 

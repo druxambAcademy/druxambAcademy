@@ -6,14 +6,14 @@ import { Pencil, PlusCircle, ImageIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Course } from "@prisma/client";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
+import { ICourse } from "@/mongodb/Course";
 
 interface ImageFormProps {
-  initialData: Course
+  initialData: ICourse
   courseId: string;
 };
 
@@ -73,9 +73,9 @@ export const ImageForm = ({
           </div>
         ) : (
           <div className="relative aspect-video mt-2">
-            <Image
+            <img
               alt="Upload"
-              fill
+              
               className="object-cover rounded-md"
               src={initialData.imageUrl}
             />
@@ -85,8 +85,8 @@ export const ImageForm = ({
       {isEditing && (
         <div>
           <FileUpload
-            endpoint="courseImage"
-            onChange={(url) => {
+          fileTypes={["JPG", "PNG", "GIF"]}
+              onChange={(url) => {
               if (url) {
                 onSubmit({ imageUrl: url });
               }

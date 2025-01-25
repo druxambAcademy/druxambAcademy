@@ -1,7 +1,8 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-import { db } from "@/lib/db";
+import { Course } from "@/mongodb/Course";
+import { Attachment } from "@/mongodb/Attachment";
 
 export async function DELETE(
   req: Request,
@@ -14,23 +15,23 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const courseOwner = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId: userId
-      }
+    const courseOwner = await Course.findOne({
+      _id: params.courseId,
+      userId: userId
     });
 
     if (!courseOwner) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const attachment = await db.attachment.delete({
-      where: {
-        courseId: params.courseId,
-        id: params.attachmentId,
-      }
+    const attachment = await Attachment.findOneAndDelete({
+      _id: params.attachmentId,
+      courseId: params.courseId,
     });
+
+    if (!attachment) {
+      return new NextResponse("Attachment not found", { status: 404 });
+    }
 
     return NextResponse.json(attachment);
   } catch (error) {

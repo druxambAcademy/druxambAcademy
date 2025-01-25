@@ -50,6 +50,7 @@ export const TitleForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(courseId)
     try {
       await axios.patch(`/api/courses/${courseId}`, values);
       toast.success("Course updated");

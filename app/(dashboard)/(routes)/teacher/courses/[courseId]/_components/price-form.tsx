@@ -8,7 +8,6 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Course } from "@prisma/client";
 
 import {
   Form,
@@ -21,9 +20,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
+import { ICourse } from "@/mongodb/Course";
 
 interface PriceFormProps {
-  initialData: Course;
+  initialData: ICourse;
   courseId: string;
 };
 

@@ -8,7 +8,6 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Chapter } from "@prisma/client";
 
 import {
   Form,
@@ -21,9 +20,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
+import { IChapter } from "@/mongodb/Chapter";
 
 interface ChapterDescriptionFormProps {
-  initialData: Chapter;
+  initialData: IChapter;
   courseId: string;
   chapterId: string;
 };

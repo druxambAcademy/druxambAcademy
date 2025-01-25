@@ -1,7 +1,9 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+import { Course } from "@/mongodb/Course";
+import { Chapter } from "@/mongodb/Chapter";
 
-import { db } from "@/lib/db";
 
 export async function PUT(
   req: Request,
@@ -16,23 +18,19 @@ export async function PUT(
 
     const { list } = await req.json();
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId: userId
-      }
+    const ownCourse = await Course.findOne({
+      _id: params.courseId,
+      userId: userId
     });
 
     if (!ownCourse) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    for (let item of list) {
-      await db.chapter.update({
-        where: { id: item.id },
-        data: { position: item.position }
-      });
-    }
+    // Use Promise.all to update all chapters concurrently
+    await Promise.all(list.map(async (item: { id: string, position: number }) => {
+      await Chapter.findByIdAndUpdate(item.id, { position: item.position });
+    }));
 
     return new NextResponse("Success", { status: 200 });
   } catch (error) {

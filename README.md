@@ -1,93 +1,74 @@
-# Build DruxAMB Academy LMS Platform: Next.js 13,  React, Stripe, Mux, Prisma, Tailwind, MySQL
+# LearnOnchain: Decentralized Learning Management System
 
-![Copy of Copy of Copy of Copy of Fullstack Twitter Clone (9)](https://github.com/AntonioErdeljac/next13-lms-platform/assets/23248726/fa077fca-bb74-419a-84de-54ac103bb026)
+LearnOnchain is a cutting-edge, blockchain-integrated Learning Management System (LMS) built for the Web3 era. It combines the power of Next.js, React, and blockchain technologies to create a decentralized platform for course creation, consumption, and certification.
 
+## 🚀 Key Features
 
-This is a repository for Build an LMS Platform: Next.js 13,  React, Stripe, Mux, Prisma, Tailwind, MySQL | Full Course 2023
+- **Course Browsing & Filtering**: Easy navigation through available courses
+- **Blockchain-Powered Payments**: Purchase courses using cryptocurrency
+- **Progress Tracking**: Mark chapters as completed and track overall course progress
+- **Student Dashboard**: Personalized view of enrolled courses and progress
+- **Teacher Mode**: Create and manage courses effortlessly
+- **Chapter Management**: Create, edit, and reorder chapters with drag-and-drop functionality
+- **Rich Media Support**: Upload thumbnails, attachments, and videos using UploadThing
+- **HLS Video Streaming**: High-quality video playback powered by Pinata
+- **Rich Text Editor**: Create engaging chapter descriptions
+- **Blockchain Authentication**: Secure login using Onchainkit
+- **NFT Certificates**: Mint course completion certificates as NFTs on the Base Sepolia network
 
-[VIDEO TUTORIAL](https://www.youtube.com/watch?v=Big_aFLmekI)
+## 🛠 Technologies Used
 
-Key Features:
-
-- Browse & Filter Courses
-- Purchase Courses using Stripe
-- Mark Chapters as Completed or Uncompleted
-- Progress Calculation of each Course
-- Student Dashboard
-- Teacher mode
-- Create new Courses
-- Create new Chapters
-- Easily reorder chapter position with drag n’ drop
-- Upload thumbnails, attachments and videos using UploadThing
-- Video processing using Mux
-- HLS Video player using Mux
-- Rich text editor for chapter description
-- Authentication using Clerk
-- ORM using Prisma
-- MySQL database using Planetscale
-
-### Prerequisites
-
-**Node version 18.x.x**
-
-### Cloning the repository
-
-```shell
-git clone https://github.com/AntonioErdeljac/next13-lms-platform.git
-```
-
-### Install packages
-
-```shell
-npm i
-```
-
-### Setup .env file
+- **Frontend**: Next.js 13, React, Tailwind CSS
+- **Backend**: Node.js, MongoDB
+- **Blockchain**: Solidity, Base Sepolia network
+- **Authentication**: Clerk with Coinbase Developer Platform
+- **File Storage**: UploadThing, Pinata
+- **Payment Processing**: Smart Wallet,Onchainkit, Stripe (for traditional payments)
+- **Smart Contract Interaction**: Wagmi
+- **Video Streaming**: HLS with Pinata
+- **Basename Viewing**: Onchainkit
 
 
-```js
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=
+## 🔗 Links
+- [link to devolio project](https://devfolio.co/projects/base-learn-7633)
+- [link to live-site](https://base-learn.vercel.app)
+- [link to X](https://x.com/onchainlearn)
 
-DATABASE_URL=
 
-UPLOADTHING_SECRET=
-UPLOADTHING_APP_ID=
+## 🔧 Setup & Installation
 
-MUX_TOKEN_ID=
-MUX_TOKEN_SECRET=
+1. Clone the repository:
 
-STRIPE_API_KEY=
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-STRIPE_WEBHOOK_SECRET=
+   ```
+   git clone https://github.com/your-username/learnOnchain.git
+   cd learnOnchain
+   ```
 
-NEXT_PUBLIC_TEACHER_ID=
-```
+2. Install dependencies:
 
-### Setup Prisma
+   ```
+   npm install
+   ```
 
-Add MySQL Database (I used PlanetScale)
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory and add the necessary environment variables (database connection, API keys, contract addresses, etc.)
 
-```shell
-npx prisma generate
-npx prisma db push
+4. Run the development server:
 
-```
+   ```
+   npm run dev
+   ```
 
-### Start the app
+5. Open `http://localhost:3000` in your browser to view the application.
 
-```shell
-npm run dev
-```
+## 🌐 Smart Contract
 
-## Available commands
+The NFT minting functionality is powered by a smart contract deployed on the Base Sepolia network.
 
-Running commands with npm `npm run [command]`
+Contract Address: `0xF2784350B0e502a1d7bE0A13B425E3f84E2CE8e5`
 
-| command         | description                              |
-| :-------------- | :--------------------------------------- |
-| `dev`           | Starts a development instance of the app |
+You can view the contract on [Base Sepolia Explorer](https://sepolia.basescan.org/address/0xF2784350B0e502a1d7bE0A13B425E3f84E2CE8e5).
+
+## 🧪 Testing
+
+To run the test suite:

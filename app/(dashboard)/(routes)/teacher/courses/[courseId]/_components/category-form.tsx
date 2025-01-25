@@ -8,8 +8,6 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Course } from "@prisma/client";
-
 import {
   Form,
   FormControl,
@@ -20,12 +18,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
+import { ICourse } from "@/mongodb/Course";
 
 interface CategoryFormProps {
-  initialData: Course;
+  initialData: ICourse;
   courseId: string;
-  options: { label: string; value: string; }[];
-};
+  options: { label: string; value: string }[];
+}
 
 const formSchema = z.object({
   categoryId: z.string().min(1),
@@ -45,7 +44,7 @@ export const CategoryForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      categoryId: initialData?.categoryId || ""
+      categoryId: initialData?.categoryId?.toString() || "",
     },
   });
 
@@ -60,9 +59,11 @@ export const CategoryForm = ({
     } catch {
       toast.error("Something went wrong");
     }
-  }
+  };
 
-  const selectedOption = options.find((option) => option.value === initialData.categoryId);
+  const selectedOption = options.find(
+    (option) => option.value === initialData.categoryId?.toString()
+  );
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
@@ -80,10 +81,12 @@ export const CategoryForm = ({
         </Button>
       </div>
       {!isEditing && (
-        <p className={cn(
-          "text-sm mt-2",
-          !initialData.categoryId && "text-slate-500 italic"
-        )}>
+        <p
+          className={cn(
+            "text-sm mt-2",
+            !initialData.categoryId && "text-slate-500 italic"
+          )}
+        >
           {selectedOption?.label || "No category"}
         </p>
       )}
@@ -99,20 +102,14 @@ export const CategoryForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Combobox
-                      options={options}
-                      {...field}
-                    />
+                    <Combobox options={options} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <div className="flex items-center gap-x-2">
-              <Button
-                disabled={!isValid || isSubmitting}
-                type="submit"
-              >
+              <Button disabled={!isValid || isSubmitting} type="submit">
                 Save
               </Button>
             </div>
@@ -120,5 +117,5 @@ export const CategoryForm = ({
         </Form>
       )}
     </div>
-  )
-}
+  );
+};

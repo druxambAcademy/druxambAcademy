@@ -1,7 +1,7 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { UserProgress } from "@/mongodb/UserProgress";
 
-import { db } from "@/lib/db";
 
 export async function PUT(
   req: Request,
@@ -15,22 +15,21 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 401 });
     } 
 
-    const userProgress = await db.userProgress.upsert({
-      where: {
-        userId_chapterId: {
-          userId,
-          chapterId: params.chapterId,
-        }
-      },
-      update: {
-        isCompleted
-      },
-      create: {
+    const userProgress = await UserProgress.findOneAndUpdate(
+      {
         userId,
         chapterId: params.chapterId,
+      },
+      {
         isCompleted,
+        userId,
+        chapterId: params.chapterId,
+      },
+      {
+        new: true,
+        upsert: true,
       }
-    })
+    );
 
     return NextResponse.json(userProgress);
   } catch (error) {

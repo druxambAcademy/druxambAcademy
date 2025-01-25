@@ -34,7 +34,7 @@ export const SidebarItem = ({
       type="button"
       className={cn(
         "flex items-center gap-x-2 text-slate-500 text-sm font-[500] pl-6 transition-all hover:text-slate-600 hover:bg-slate-300/20",
-        isActive && "text-green-700 bg-green-200/20 hover:bg-green-200/20 hover:text-green-700"
+        isActive && "text-blue-700 bg-blue-200/20 hover:bg-blue-200/20 hover:text-blue-700"
       )}
     >
       <div className="flex items-center gap-x-2 py-4">
@@ -42,14 +42,14 @@ export const SidebarItem = ({
           size={22}
           className={cn(
             "text-slate-500",
-            isActive && "text-green-700 spin"
+            isActive && "text-blue-700 spin"
           )}
         />
         {label}
       </div>
       <div
         className={cn(
-          "ml-auto opacity-0 border-2 border-green-700 h-full transition-all",
+          "ml-auto opacity-0 border-2 border-blue-700 h-full transition-all",
           isActive && "opacity-100"
         )}
       />

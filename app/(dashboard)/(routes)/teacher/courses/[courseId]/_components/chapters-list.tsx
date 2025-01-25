@@ -1,6 +1,5 @@
 "use client";
 
-import { Chapter } from "@prisma/client";
 import { useEffect, useState } from "react";
 import {
   DragDropContext,
@@ -12,9 +11,10 @@ import { Grip, Pencil } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { IChapter } from "@/mongodb/Chapter";
 
 interface ChaptersListProps {
-  items: Chapter[];
+  items: IChapter[];
   onReorder: (updateData: { id: string; position: number }[]) => void;
   onEdit: (id: string) => void;
 };
@@ -108,7 +108,7 @@ export const ChaptersList = ({
                         {chapter.isPublished ? "Published" : "Draft"}
                       </Badge>
                       <Pencil
-                        onClick={() => onEdit(chapter.id)}
+                        onClick={() => onEdit(chapter._id as string)}
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
                       />
                     </div>

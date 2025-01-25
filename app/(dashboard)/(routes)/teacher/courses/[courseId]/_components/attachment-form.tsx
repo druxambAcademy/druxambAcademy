@@ -2,18 +2,18 @@
 
 import * as z from "zod";
 import axios from "axios";
-import { Pencil, PlusCircle, ImageIcon, File, Loader2, X } from "lucide-react";
+import {  PlusCircle,  File, Loader2, X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Attachment, Course } from "@prisma/client";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
+import { IAttachment } from "@/mongodb/Attachment";
+import { ICourse } from "@/mongodb/Course";
 
 interface AttachmentFormProps {
-  initialData: Course & { attachments: Attachment[] };
+  initialData: ICourse & { attachments: IAttachment[] };
   courseId: string;
 };
 
@@ -81,23 +81,23 @@ export const AttachmentForm = ({
           )}
           {initialData.attachments.length > 0 && (
             <div className="space-y-2">
-              {initialData.attachments.map((attachment) => (
+              {initialData.attachments.map((attachment: IAttachment ) => (
                 <div
-                  key={attachment.id}
+                  key={attachment._id as string}
                   className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
                 >
                   <File className="h-4 w-4 mr-2 flex-shrink-0" />
                   <p className="text-xs line-clamp-1">
-                    {attachment.name}
+                    {attachment.name! as string}
                   </p>
-                  {deletingId === attachment.id && (
+                  {deletingId === attachment._id as string && (
                     <div>
                       <Loader2 className="h-4 w-4 animate-spin" />
                     </div>
                   )}
-                  {deletingId !== attachment.id && (
+                  {deletingId !== attachment._id as string && (
                     <button
-                      onClick={() => onDelete(attachment.id)}
+                      onClick={() => onDelete(attachment._id as string)}
                       className="ml-auto hover:opacity-75 transition"
                     >
                       <X className="h-4 w-4" />
@@ -112,7 +112,7 @@ export const AttachmentForm = ({
       {isEditing && (
         <div>
           <FileUpload
-            endpoint="courseAttachment"
+            fileTypes={["pdf"]}
             onChange={(url) => {
               if (url) {
                 onSubmit({ url: url });
